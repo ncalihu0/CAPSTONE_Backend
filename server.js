@@ -18,7 +18,12 @@ app.get('/budgetTracker', async (req, res) => {
 })
 
 app.get('/resources', async (req, res) => {
-    res.send('articles')
+    //if we want the user to search or we make a prompt
+    const input = req.query.input;
+    const response = await axios.get(`https://newsapi.org/v2/everything?q=${input}+finance+cash&pageSize=5&sortBy=relevancy&apiKey=3a62fb90d8854a25a5af26dd34eb0b38`)
+    //sends an array of articles. This includes the source, author, title, desc, url, urlIMG, published, content
+    res.json({ data: response.data.articles })
+
 })
 
 app.get('/login', (req, res) => {
