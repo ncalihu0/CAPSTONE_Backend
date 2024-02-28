@@ -1,5 +1,7 @@
 import express from 'express';
 import mysql from 'mysql2';
+import axios from 'axios'
+import sgMail from '@sendgrid/mail'
 
 const app = express();
 const databse = mysql.createConnection({
@@ -68,10 +70,39 @@ app.get('/admin', (req, res) => {
 app.get('/signup', (req, res) => {
     const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.securityQuestion1, req.query.answerSecQues1, req.query.phoneNum]
     const query = "INSERT INTO User (`first_name`, `last_name`, `password`, `email`, `securityQuestion1`, `answerSecQues1`, `phoneNum`) VALUES (?)"
+    const email = req.query.email;
+
     databse.query(query, [values], (err, data) => {
         if (err) {
             res.status(500).json({ error: 'Internal server error' });
         } else {
+            sgMail.setApiKey("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")
+            const msg = {
+                to: email, // Change to your recipient
+                from: 'budgetbuddyinc@gmail.com', // Change to your verified sender
+                subject: `🎉 Welcome to BudgetBuddy! Let's Make Finance Fun! 🎉`,
+                text:
+                    `           Hey there, Financial Trailblazer!, 
+                       Welcome aboard the BudgetBuddy train! 🚀 We're beyond excited to have you join our crew as we embark on an epic journey to conquer your financial goals and dreams.
+            
+                       We know that navigating the financial landscape can sometimes feel like trying to find your way through a maze with a blindfold on. 😅 But fear not! Our user-friendly interface and supercharged 
+                       features are here to be your guiding light, making the process as smooth as butter and twice as enjoyable!
+            
+                       Welcome to the BudgetBuddy community, where financial freedom meets fun! 🎉 We're absolutely stoked to have you on board and can't wait to witness you soar on your financial journey!
+            
+                       Here's to a future filled with prosperity, excitement, and plenty of high-fives! 🙌
+            
+                       Warm regards,
+                       BudgetBuddy 💼`,
+            }
+            sgMail
+                .send(msg)
+                .then(() => {
+                    console.log('Email sent')
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
             res.status(200).json({ message: 'User has been created' })
         }
     })
