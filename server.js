@@ -1,13 +1,16 @@
 import express from 'express';
 import mysql from 'mysql2';
+import axios from 'axios'
+import cors from 'cors';
 
 const app = express();
-const databse = mysql.createConnection({
-    host: '',
-    user: '',
-    password: '',
-    database: ''
-})
+app.use(cors());
+// const databse = mysql.createConnection({
+//     host: '',
+//     user: '',
+//     password: '',
+//     database: ''
+// })
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -29,39 +32,44 @@ app.get('/resources', async (req, res) => {
 app.get('/login', (req, res) => {
     const email = req.query.email;
     const password = req.query.password;
-    const query = `SELECT * FROM User WHERE email = "${email}"`;
-    databse.query(query, (err, data) => {
-        if (err) {
-            console.log(err)
-            res.status(500).json({ error: 'Internal server error' })
-        } else {
-            if (data.length > 0) {
-                if (data[0].password === password && data[0].admin === true) {
-                    res.status(200).json({ redirect: '/admin' });
-                } else if (data[0].password === password) {
-                    res.status(200).json({ message: `Welcome back ${data.first_name}` });
-                } else {
-                    res.json({ error: "Wrong password" });
-                }
-            } else {
-                res.json({ error: "Wrong email" });
-            }
+    console.log(email)
+    console.log(password)
+    res.json({ data: email })
 
-        }
-    })
+    //     const query = `SELECT * FROM User WHERE email = "${email}"`;
+    //     databse.query(query, (err, data) => {
+    //         if (err) {
+    //             console.log(err)
+    //             res.status(500).json({ error: 'Internal server error' })
+    //         } else {
+    //             if (data.length > 0) {
+    //                 if (data[0].password === password && data[0].admin === true) {
+    //Can't reroute in the backend, but by sending message, frontend can check if the message is there and reroute from there
+    //                     res.status(200).json({ redirect: '/admin' });
+    //                 } else if (data[0].password === password) {
+    //                     res.status(200).json({ message: `Welcome back ${data.first_name}` });
+    //                 } else {
+    //                     res.json({ error: "Wrong password" });
+    //                 }
+    //             } else {
+    //                 res.json({ error: "Wrong email" });
+    //             }
 
-})
+    //         }
+    //     })
 
-app.get('/admin', (req, res) => {
-    const query = `SELECT * FROM User`;
-    databse.query(query, (err, data => {
-        if (err) {
-            console.log(err)
-            res.status(500).json({ error: 'Internal server error' })
-        } else {
-            res.status(200).json({ users: data })
-        }
-    }))
+    // })
+
+    // app.get('/admin', (req, res) => {
+    //     const query = `SELECT * FROM User`;
+    //     databse.query(query, (err, data => {
+    //         if (err) {
+    //             console.log(err)
+    //             res.status(500).json({ error: 'Internal server error' })
+    //         } else {
+    //             res.status(200).json({ users: data })
+    //         }
+    //     }))
 
 })
 
