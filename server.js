@@ -3,10 +3,10 @@ import mysql from 'mysql2';
 
 const app = express();
 const databse = mysql.createConnection({
-    host: '',
-    user: '',
-    password: '',
-    database: ''
+    host: 'sql5.freesqldatabase.com',
+    user: 'sql5.freesqldatabase.com',
+    password: 'WXEqCM8XeE',
+    database: 'sql5687275'
 })
 
 app.get('/', (req, res) => {
