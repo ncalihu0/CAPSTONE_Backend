@@ -2,6 +2,9 @@ import express from 'express';
 import mysql from 'mysql2';
 import axios from 'axios'
 import sgMail from '@sendgrid/mail'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const databse = mysql.createConnection({
@@ -76,7 +79,7 @@ app.get('/signup', (req, res) => {
         if (err) {
             res.status(500).json({ error: 'Internal server error' });
         } else {
-            sgMail.setApiKey("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")
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
             const msg = {
                 to: email, // Change to your recipient
                 from: 'budgetbuddyinc@gmail.com', // Change to your verified sender
