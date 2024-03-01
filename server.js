@@ -3,13 +3,15 @@ import mysql from 'mysql2';
 import axios from 'axios'
 import sgMail from '@sendgrid/mail'
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 const databse = mysql.createConnection({
     host: 'sql5.freesqldatabase.com',
-    user: 'sql5.freesqldatabase.com',
+    user: 'sql5687275',
     password: 'WXEqCM8XeE',
     database: 'sql5687275'
 })
@@ -44,7 +46,7 @@ app.get('/login', (req, res) => {
                 if (data[0].password === password && data[0].admin === true) {
                     res.status(200).json({ redirect: '/admin' });
                 } else if (data[0].password === password) {
-                    res.status(200).json({ message: `Welcome back ${data.first_name}` });
+                    res.status(200).json({ message: `Welcome back ${data[0].first_name}` });
                 } else {
                     res.json({ error: "Wrong password" });
                 }
