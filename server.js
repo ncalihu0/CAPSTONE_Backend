@@ -4,17 +4,84 @@ import axios from 'axios'
 import sgMail from '@sendgrid/mail'
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cron from 'node-cron'
+import moment from 'moment';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-const databse = mysql.createConnection({
+const database = mysql.createConnection({
     host: 'sql5.freesqldatabase.com',
     user: 'sql5687275',
     password: 'WXEqCM8XeE',
     database: 'sql5687275'
 })
+
+//sending articles to users by fetching it from thr api
+let date = new Date();
+let format = moment(date).format('YYYY-MM-D')
+const input = "tips to budget"
+const response = await axios.get(`https://newsapi.org/v2/everything?q=${input}+money management+cash+budgeting&pageSize=5&sortBy=relevancy&to=${format}&apiKey=3a62fb90d8854a25a5af26dd34eb0b38`)
+let articles = response.data.articles;
+let htmlContent = `<div>`
+articles.forEach(article => {
+    htmlContent += `
+    <div style="margin-bottom: 20px;">
+        <img src="${article.urlToImage}" alt="${article.title}" style="max-width: 100px;">
+        <div>
+            <h3 style="margin-bottom: 5px;">${article.title}</h3>
+            <p style="margin-bottom: 5px;">${article.description}</p>
+            <a href="${article.url}">Read more</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+`;
+})
+htmlContent += '</div>';
+
+//creating function to send emails to users
+const sendNewsletter = (email) => {
+    dotenv.config();
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+    const msg = {
+        to: email, // Change to your recipient
+        from: 'budgetbuddyinc@gmail.com', // Change to your verified sender
+        subject: `Newsletter`,
+        html: htmlContent,
+        asm: {
+            group_id: 25253,
+            groups_to_display: [
+                25253
+            ],
+        },
+    }
+    sgMail
+        .send(msg)
+        .then(() => {
+            console.log('Email sent')
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+
+}
+
+//as this goes off, it will run our function sendNewsletter to our users. It will start once the server is running. 
+//can test for every minute, use the code below
+// cron.schedule('* * * * *', async () => {
+//The schedule is every monday at 9:30
+cron.schedule('0 30 9 * * 1', async () => {
+
+    try {
+        const query = "SELECT email FROM User";
+        const [rows, fields] = await database.promise().query(query);
+        const emails = rows.map(row => row.email);
+        emails.forEach(email => sendNewsletter(email));
+    } catch (error) {
+        console.error('Error fetching emails from database:', error);
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -37,7 +104,7 @@ app.get('/login', (req, res) => {
     const email = req.query.email;
     const password = req.query.password;
     const query = `SELECT * FROM User WHERE email = "${email}"`;
-    databse.query(query, (err, data) => {
+    database.query(query, (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json({ error: 'Internal server error' })
@@ -61,7 +128,7 @@ app.get('/login', (req, res) => {
 
 app.get('/admin', (req, res) => {
     const query = `SELECT * FROM User`;
-    databse.query(query, (err, data => {
+    database.query(query, (err, data => {
         if (err) {
             console.log(err)
             res.status(500).json({ error: 'Internal server error' })
@@ -77,7 +144,7 @@ app.get('/signup', (req, res) => {
     const query = "INSERT INTO User (`first_name`, `last_name`, `password`, `email`, `securityQuestion1`, `answerSecQues1`, `phoneNum`) VALUES (?)"
     const email = req.query.email;
 
-    databse.query(query, [values], (err, data) => {
+    database.query(query, [values], (err, data) => {
         if (err) {
             res.status(500).json({ error: 'Internal server error' });
         } else {
