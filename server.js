@@ -140,8 +140,8 @@ app.get('/admin', (req, res) => {
 })
 
 app.get('/signup', (req, res) => {
-    const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.securityQuestion1, req.query.answerSecQues1, req.query.phoneNum]
-    const query = "INSERT INTO User (`first_name`, `last_name`, `password`, `email`, `securityQuestion1`, `answerSecQues1`, `phoneNum`) VALUES (?)"
+    const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.secuQues1, req.query.answerSecuQues1, req.query.phoneNum]
+    const query = "INSERT INTO User (`first_name`, `last_name`, `password`, `email`, `secuQues1`, `answerSecuQues1`, `phoneNum`) VALUES (?)"
     const email = req.query.email;
 
     database.query(query, [values], (err, data) => {
