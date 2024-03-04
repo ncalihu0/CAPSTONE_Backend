@@ -6,11 +6,15 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cron from 'node-cron'
 import moment from 'moment';
+import bodyParser from 'body-parser'
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const database = mysql.createConnection({
     host: 'sql5.freesqldatabase.com',
     user: 'sql5687275',
@@ -71,17 +75,17 @@ const sendNewsletter = (email) => {
 //can test for every minute, use the code below
 // cron.schedule('* * * * *', async () => {
 //The schedule is every monday at 9:30
-cron.schedule('0 30 9 * * 1', async () => {
+// cron.schedule('0 30 9 * * 1', async () => {
 
-    try {
-        const query = "SELECT email FROM User";
-        const [rows, fields] = await database.promise().query(query);
-        const emails = rows.map(row => row.email);
-        emails.forEach(email => sendNewsletter(email));
-    } catch (error) {
-        console.error('Error fetching emails from database:', error);
-    }
-});
+//     try {
+//         const query = "SELECT email FROM User";
+//         const [rows, fields] = await database.promise().query(query);
+//         const emails = rows.map(row => row.email);
+//         emails.forEach(email => sendNewsletter(email));
+//     } catch (error) {
+//         console.error('Error fetching emails from database:', error);
+//     }
+// });
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -147,16 +151,52 @@ app.get('/login', (req, res) => {
 
 app.get('/admin', (req, res) => {
     const query = `SELECT * FROM User`;
-    database.query(query, (err, data => {
+    database.query(query, (err, data) => {
         if (err) {
             console.log(err)
             return res.status(500).json({ error: 'Internal server error' })
         } else {
             return res.status(200).json({ users: data })
         }
-    }))
+    })
 
 })
+app.put('/update', (req, res) => {
+    const values = [
+        req.body.first_name,
+        req.body.last_name,
+        req.body.password,
+        req.body.email,
+        req.body.secuQues1,
+        req.body.answerSecuQues1,
+        req.body.phoneNum,
+        req.body.admin,
+        req.body.id
+    ];
+    const query = `
+        UPDATE User
+        SET 
+            first_name = ?, 
+            last_name = ?, 
+            password = ?, 
+            email = ?, 
+            secuQues1 = ?, 
+            answerSecuQues1 = ?, 
+            phoneNum = ?, 
+            admin = ?
+        WHERE id = ?`;
+    database.query(query, values, (err, result) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).json({ error: 'Internal server error' })
+        } if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        } else {
+            return res.status(200).json({ message: 'Successfully updated' })
+        }
+    })
+})
+
 
 app.post('/signup', (req, res) => {
     const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.secuQues1, req.query.answerSecuQues1, req.query.phoneNum]
