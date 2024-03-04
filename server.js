@@ -126,8 +126,11 @@ app.get('/login', (req, res) => {
             return res.status(500).json({ error: 'Internal server error' })
         } else {
             if (data.length > 0) {
-                if (data[0].password === password && data[0].admin === true) {
-                    return res.status(200).json({ redirect: '/admin' });
+                if (data[0].password === password && data[0].admin === 1) {
+                    return res.status(200).json({
+                        redirect: '/admin',
+                        message: `Welcome back ${data[0].first_name}`
+                    });
                 } else if (data[0].password === password) {
                     return res.status(200).json({ message: `Welcome back ${data[0].first_name}` });
                 } else {
