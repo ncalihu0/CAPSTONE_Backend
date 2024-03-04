@@ -71,17 +71,17 @@ const sendNewsletter = (email) => {
 //can test for every minute, use the code below
 // cron.schedule('* * * * *', async () => {
 //The schedule is every monday at 9:30
-// cron.schedule('0 30 9 * * 1', async () => {
+cron.schedule('0 30 9 * * 1', async () => {
 
-//     try {
-//         const query = "SELECT email FROM User";
-//         const [rows, fields] = await database.promise().query(query);
-//         const emails = rows.map(row => row.email);
-//         emails.forEach(email => sendNewsletter(email));
-//     } catch (error) {
-//         console.error('Error fetching emails from database:', error);
-//     }
-// });
+    try {
+        const query = "SELECT email FROM User";
+        const [rows, fields] = await database.promise().query(query);
+        const emails = rows.map(row => row.email);
+        emails.forEach(email => sendNewsletter(email));
+    } catch (error) {
+        console.error('Error fetching emails from database:', error);
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('Hello World');
