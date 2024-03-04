@@ -92,11 +92,27 @@ app.get('/budgetTracker', async (req, res) => {
 })
 
 app.get('/resources', async (req, res) => {
-    //if we want the user to search or we make a prompt
-    const input = req.query.input;
-    const response = await axios.get(`https://newsapi.org/v2/everything?q=${input}+finance+cash&pageSize=5&sortBy=relevancy&apiKey=3a62fb90d8854a25a5af26dd34eb0b38`)
-    //sends an array of articles. This includes the source, author, title, desc, url, urlIMG, published, content
-    res.json({ data: response.data.articles })
+    let location = req.query.location;
+    let input = req.query.input;
+    if (input) {
+        //if we want the user to search or we make a prompt
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${input}+finance+cash&pageSize=5&sortBy=relevancy&apiKey=3a62fb90d8854a25a5af26dd34eb0b38`)
+        //sends an array of articles. This includes the source, author, title, desc, url, urlIMG, published, content
+        return res.json({ data: response.data.articles })
+    } else if (location) {
+        //use google events api to search for budgeting events
+        //let user input city & state or just zipcode
+        let response = await axios.get(`https://serpapi.com/search.json?q=budgeting+events+in+${location}&api_key=37c572e07631a37fa4210f55546a883d06f95591e4f24f5e1ef0ad64f0e8cf78&google_domain=google.com&gl=us&hl=en&engine=google_events`)
+        //if the results have any events near the location, send the json of that data
+        if (response.data.events_results.length > 0) {
+            return res.json({ data: response.data.events_results })
+            //else let the user know no events found
+        } else {
+            return res.json({ message: 'No events found. Try another location' })
+        }
+
+    }
+
 
 })
 
@@ -107,18 +123,18 @@ app.get('/login', (req, res) => {
     database.query(query, (err, data) => {
         if (err) {
             console.log(err)
-            res.status(500).json({ error: 'Internal server error' })
+            return res.status(500).json({ error: 'Internal server error' })
         } else {
             if (data.length > 0) {
                 if (data[0].password === password && data[0].admin === true) {
-                    res.status(200).json({ redirect: '/admin' });
+                    return res.status(200).json({ redirect: '/admin' });
                 } else if (data[0].password === password) {
-                    res.status(200).json({ message: `Welcome back ${data[0].first_name}` });
+                    return res.status(200).json({ message: `Welcome back ${data[0].first_name}` });
                 } else {
-                    res.json({ error: "Wrong password" });
+                    return res.json({ error: "Wrong password" });
                 }
             } else {
-                res.json({ error: "Wrong email" });
+                return res.json({ error: "Wrong email" });
             }
 
         }
@@ -131,9 +147,9 @@ app.get('/admin', (req, res) => {
     database.query(query, (err, data => {
         if (err) {
             console.log(err)
-            res.status(500).json({ error: 'Internal server error' })
+            return res.status(500).json({ error: 'Internal server error' })
         } else {
-            res.status(200).json({ users: data })
+            return res.status(200).json({ users: data })
         }
     }))
 
@@ -146,7 +162,7 @@ app.get('/signup', (req, res) => {
 
     database.query(query, [values], (err, data) => {
         if (err) {
-            res.status(500).json({ error: 'Internal server error' });
+            return res.status(500).json({ error: 'Internal server error' });
         } else {
             sgMail.setApiKey(process.env.SENDGRID_API_KEY)
             const msg = {
@@ -175,7 +191,7 @@ app.get('/signup', (req, res) => {
                 .catch((error) => {
                     console.error(error)
                 })
-            res.status(200).json({ message: 'User has been created' })
+            return res.status(200).json({ message: 'User has been created' })
         }
     })
 })
