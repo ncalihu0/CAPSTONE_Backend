@@ -168,11 +168,10 @@ app.put('/update', (req, res) => {
         req.body.last_name,
         req.body.password,
         req.body.email,
-        req.body.secuQues1,
-        req.body.answerSecuQues1,
+        req.body.answerSecuQuest1,
         req.body.phoneNum,
         req.body.admin,
-        req.body.id
+        req.body.user_id
     ];
     const query = `
         UPDATE User
@@ -181,11 +180,10 @@ app.put('/update', (req, res) => {
             last_name = ?, 
             password = ?, 
             email = ?, 
-            secuQues1 = ?, 
-            answerSecuQues1 = ?, 
+            answerSecuQuest1 = ?, 
             phoneNum = ?, 
             admin = ?
-        WHERE id = ?`;
+        WHERE user_id = ?`;
     database.query(query, values, (err, result) => {
         if (err) {
             console.log(err)
