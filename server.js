@@ -17,9 +17,9 @@ app.use(bodyParser.json());
 
 const database = mysql.createConnection({
     host: 'sql5.freesqldatabase.com',
-    user: 'sql5687275',
-    password: 'WXEqCM8XeE',
-    database: 'sql5687275'
+    user: 'sql5688976',
+    password: 'JR6p3WvG9B',
+    database: 'sql5688976'
 })
 
 //sending articles to users by fetching it from thr api
@@ -197,6 +197,55 @@ app.put('/update', (req, res) => {
     })
 })
 
+
+app.post('/budgetsession', (req, res) => {
+    const values = [req.body.user_id, req.body.date, req.body.session_name]
+    const query = "INSERT INTO budget_sessions (`user_id`,`date`,`session_name`) VALUES (?)"
+    database.query(query, [values], (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Internal server error' });
+        } else {
+            return res.status(200).json({ message: 'Budget session has been created' })
+        }
+    })
+})
+app.post('/budgetentry', (req, res) => {
+    const values = [req.body.amount, req.body.category_id, req.body.session_id]
+    const query = "INSERT INTO budget_entries (`session_id`,`category_id`,`amount`) VALUES (?)"
+    database.query(query, [values], (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Internal server error' });
+        } else {
+            return res.status(200).json({ message: 'Budget entry has been created' })
+        }
+    })
+})
+// app.get('/bugdethistory', (req, res) => {
+//     const query = `SELECT
+//     u.email,
+//         bs.session_id,
+//         bs.session_date,
+//         c.category_name,
+//         be.amount
+//     FROM
+//     User u
+//     JOIN
+//     budget_sessions bs ON u.user_id = bs.user_id
+//     JOIN
+//     budget_entries be ON bs.session_id = be.session_id
+//     JOIN
+//     categories c ON be.category_id = c.category_id
+//     WHERE
+//     u.email = '${}' ` 
+//     // make a sezsion id w express for email store that in a var and place var in the query
+//     database.query(query, (err, data) => {
+//         if (err) {
+//             return res.status(500).json({ error: 'Internal server error' });
+//         } else {
+//             return res.status(200).json({ history: data })
+//         }
+//     })
+// })
 
 app.post('/signup', (req, res) => {
     const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.secuQues1, req.query.answerSecuQues1, req.query.phoneNum]
