@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -248,17 +249,21 @@ app.post('/budgetentry', (req, res) => {
 // })
 
 app.post('/signup', (req, res) => {
-    const values = [req.query.first_name, req.query.last_name, req.query.password, req.query.email, req.query.secuQues1, req.query.answerSecuQues1, req.query.phoneNum]
-    const query = "INSERT INTO User (`first_name`, `last_name`, `password`, `email`, `secuQues1`, `answerSecuQues1`, `phoneNum`) VALUES (?)"
-    const email = req.query.email;
+    const { first_name, last_name, email, phoneNum, password, answerSecuQuest1 } = req.body;
+    const values = [first_name, last_name, password, email, answerSecuQuest1, phoneNum];
+    const query = `INSERT INTO User (first_name, last_name, password, email, answerSecuQuest1, phoneNum) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    database.query(query, [values], (err, data) => {
+    const userEmail = email;
+    console.log(values);
+
+    database.query(query, values, (err, results) => {
         if (err) {
+            console.log(err)
             return res.status(500).json({ error: 'Internal server error' });
         } else {
             sgMail.setApiKey(process.env.SENDGRID_API_KEY)
             const msg = {
-                to: email, // Change to your recipient
+                to: userEmail, // Change to your recipient
                 from: 'budgetbuddyinc@gmail.com', // Change to your verified sender
                 subject: `🎉 Welcome to BudgetBuddy! Let's Make Finance Fun! 🎉`,
                 text:
