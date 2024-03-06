@@ -7,6 +7,16 @@ import cors from 'cors';
 import cron from 'node-cron'
 import moment from 'moment';
 import bodyParser from 'body-parser'
+// const express = require('express');
+// const mysql = require('mysql2')
+// const axios = require('axios')
+// const sgMail = require('@sendgrid/mail')
+// const dotenv = require('dotenv')
+// const cors = require('cors')
+// const cron = require('node-cron')
+// const moment = require('moment')
+// const bodyParser = require('body-parser')
+
 
 dotenv.config();
 
@@ -24,6 +34,7 @@ const database = mysql.createConnection({
 })
 
 //sending articles to users by fetching it from thr api
+//comment this part our when testing
 let date = new Date();
 let format = moment(date).format('YYYY-MM-D')
 const input = "tips to budget"
@@ -294,3 +305,5 @@ app.post('/signup', (req, res) => {
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
 });
+
+// module.exports = { app };
