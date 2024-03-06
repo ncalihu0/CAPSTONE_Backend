@@ -34,6 +34,7 @@ const database = mysql.createConnection({
 })
 
 //sending articles to users by fetching it from thr api
+//comment this part our when testing
 let date = new Date();
 let format = moment(date).format('YYYY-MM-D')
 const input = "tips to budget"
