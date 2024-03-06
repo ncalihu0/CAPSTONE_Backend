@@ -7,6 +7,16 @@ import cors from 'cors';
 import cron from 'node-cron'
 import moment from 'moment';
 import bodyParser from 'body-parser'
+// const express = require('express');
+// const mysql = require('mysql2')
+// const axios = require('axios')
+// const sgMail = require('@sendgrid/mail')
+// const dotenv = require('dotenv')
+// const cors = require('cors')
+// const cron = require('node-cron')
+// const moment = require('moment')
+// const bodyParser = require('body-parser')
+
 
 dotenv.config();
 
@@ -294,3 +304,5 @@ app.post('/signup', (req, res) => {
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
 });
+
+// module.exports = { app };
