@@ -27,10 +27,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const database = mysql.createConnection({
-    host: 'sql5.freesqldatabase.com',
-    user: 'sql5688976',
-    password: 'JR6p3WvG9B',
-    database: 'sql5688976'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 })
 
 //sending articles to users by fetching it from thr api
