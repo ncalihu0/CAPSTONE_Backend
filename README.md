@@ -16,7 +16,11 @@ npm start
 # Environment Variables
 Ensure you have a .env file in the root directory with the following variables:
 
-- MYSQL_DATABASE: Your MySQL database information.
+- Your MySQL database information:
+- DB_HOST
+- DB_USER
+- DB_PASSWORD
+- DB_NAME
 - SENDGRID_API_KEY: Your SendGrid API key.
 
 Note: Ensure the .env file is added to the .gitignore to prevent sensitive information from being exposed.
